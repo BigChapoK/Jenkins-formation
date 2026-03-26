@@ -9,14 +9,6 @@ pipeline {
     }
 
     stages {
-        stage('Build Image Docker') {
-            steps {
-                echo 'Construction de l\'image Docker en local...'
-                // Le point (.) indique à Docker de chercher le Dockerfile dans le dossier courant
-                sh "docker build -t ${IMAGE_NAME} ."
-                sh "docker run --rm -v "$(pwd)":/opt/maven -w /opt/maven maven:3.3.9-jdk-8 mvn clean package -DskipTests"
-            }
-        }
         stage('Nettoyage') {
             steps {
                 echo 'Suppression de l\'ancien conteneur s\'il tourne déjà...'
@@ -24,10 +16,12 @@ pipeline {
                 sh "docker rm -f ${CONTAINER_NAME} || true"
             }
         }
-        stage('Lancement du Conteneur') {
+        stage('Build Image Docker') {
             steps {
-                echo 'Démarrage du nouveau conteneur...'
-                sh "docker run -d -p ${PORT_HOTE}:80 --name ${CONTAINER_NAME} ${IMAGE_NAME}"
+                echo 'Construction de l\'image Docker en local...'
+                // Le point (.) indique à Docker de chercher le Dockerfile dans le dossier courant
+                sh "docker build -t ${IMAGE_NAME} ."
+                sh "docker run --rm -v "$(pwd)":/opt/maven -w /opt/maven maven:3.3.9-jdk-8 mvn clean package -DskipTests"
             }
         }
     }
