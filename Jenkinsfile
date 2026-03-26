@@ -11,17 +11,8 @@ pipeline {
     stages {
         stage('Génération des fichiers') {
             steps {
-                echo 'Création de la page web index.html à la volée... Formation Jenkins - ASCENT Version 1.0'
-
+                echo 'Récupération de la page web index.html et du Dockerfile depuis le repo git'
                 checkout scm
-
-                echo 'Création du Dockerfile à la volée...'
-
-                writeFile file: 'Dockerfile', text: '''
-FROM nginx:alpine
-COPY index.html /usr/share/nginx/html/index.html
-EXPOSE 80
-'''
             }
         }
         stage('Build Image Docker') {
