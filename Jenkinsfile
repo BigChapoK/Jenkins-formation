@@ -5,7 +5,7 @@ pipeline {
         // Définition de variables pour le nommage
         IMAGE_NAME    = 'mon-image-web-locale'
         CONTAINER_NAME = 'mon-conteneur-web-local'
-        PORT_HOTE      = '8082' // Le port sur lequel on accèdera au site
+        PORT_HOTE      = '8081' // Le port sur lequel on accèdera au site
     }
 
     stages {
