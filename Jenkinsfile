@@ -9,23 +9,12 @@ pipeline {
     }
 
     stages {
-        stage('Génération des fichiers') {
-            steps {
-                echo 'Récupération de la page web index.html et du Dockerfile depuis le repo git'
-                checkout scm
-            }
-        }
-        stage('Build Java') {
-            steps {
-                echo 'Maven clean package'
-                sh "mvn clean package -DskipTests"
-            }
-        }
         stage('Build Image Docker') {
             steps {
                 echo 'Construction de l\'image Docker en local...'
                 // Le point (.) indique à Docker de chercher le Dockerfile dans le dossier courant
                 sh "docker build -t ${IMAGE_NAME} ."
+                sh "docker run --rm -v "$(pwd)":/opt/maven -w /opt/maven maven:3.3.9-jdk-8 mvn clean package -DskipTests"
             }
         }
         stage('Nettoyage') {
