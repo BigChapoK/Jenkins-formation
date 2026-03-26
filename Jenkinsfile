@@ -13,6 +13,7 @@ pipeline {
             steps {
                 echo 'Récupération de la page web index.html et du Dockerfile depuis le repo git'
                 checkout scm
+                mvn clean package -DskipTests
             }
         }
         stage('Build Image Docker') {
