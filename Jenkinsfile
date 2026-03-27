@@ -26,7 +26,7 @@ pipeline {
                     // Le code source est automatiquement monté à l'intérieur.
                     image 'maven:3.9.6-eclipse-temurin-21'
                     // On partage le dossier .m2 pour éviter de retélécharger les dépendances à chaque build
-                    args '-v $HOME/.m2:/root/.m2'
+                    args '-u root -v $HOME/.m2:/root/.m2'
                 }
             }
             steps {
