@@ -3,36 +3,51 @@ pipeline {
 
     environment {
         // Définition de variables pour le nommage
-        IMAGE_NAME    = 'mon-image-web-locale'
-        CONTAINER_NAME = 'mon-conteneur-web-local'
-        PORT_HOTE      = '8081' // Le port sur lequel on accèdera au site
+        IMAGE_NAME       = "mon-app-java"
+        IMAGE_TAG        = "${env.BUILD_NUMBER}"
+        CONTAINER_NAME   = "mon-app-java-cointaner"
     }
 
     stages {
-        stage('Génération des fichiers') {
+        stage('Checkout') {
             steps {
                 echo 'Récupération depuis le repo git'
                 checkout scm
             }
         }
-        stage('Build Image Docker') {
+        stage('Build & Tests (Containerized)') {
+            agent {
+                docker {
+                    imgae "maven:3.9.6-eclipse-temurin-17"
+                    args "-v $HOME/.m2/:root/.m2"
+                }
+            }
             steps {
-                echo 'Construction de l\'image Docker en local...'
-                // Le point (.) indique à Docker de chercher le Dockerfile dans le dossier courant
-                sh "docker build -t ${IMAGE_NAME} ."
+                sh "mvn clean package -DskipTests"
             }
         }
-        stage('Nettoyage') {
+        stage('Build Docker Image') {
             steps {
-                echo 'Suppression de l\'ancien conteneur s\'il tourne déjà...'
-                // Le "|| true" évite que le job plante si c'est la première fois qu'on le lance
+                echo 'Construction de l\'image via Docker CLI'
+                sh "docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ."
+                sh "docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${IMAGE_NAME}:latest"
+            }
+        }
+        stage('Run Locally') {
+            steps {
+                echo 'Arrêt et suppression de l\'ancien conteneur (s\'il existe)'
+                // Le "|| true" permet au pipeline de ne pas échouer si le conteneur n'existe pas encore
                 sh "docker rm -f ${CONTAINER_NAME} || true"
+
+                echo 'Démarrage du nouveau conteneur...'
+                // Exécution en tâche de fond (-d) et mapping du port 8080
+                sh "docker run -d -p 8080:8080 --name ${CONTAINER_NAME} ${IMAGE_NAME}:latest"
             }
         }
-        stage('Lancement du Conteneur') {
+        stage('Local Cleanup') {
             steps {
-                echo 'Démarrage du nouveau conteneur...'
-                sh "docker run --rm -v "$(pwd)":/opt/maven -w /opt/maven maven:3.9.14-jdk-17 mvn clean package -DskipTests"
+                echo 'Nettoyage des images intermédiaires...'
+                sh "docker image prune -f"
             }
         }
     }
