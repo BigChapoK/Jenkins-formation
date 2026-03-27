@@ -1,5 +1,5 @@
 # Utilisation de l'image officielle Eclipse Temurin pour Java 21
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:21-jre-jammy
 # Métadonnées
 LABEL maintainer="votre-nom@example.com"
 # Dossier de travail
