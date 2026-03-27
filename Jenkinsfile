@@ -13,17 +13,20 @@ pipeline {
             steps {
                 echo 'Récupération depuis le repo git'
                 checkout scm
+                echo "checkout terminé"
             }
         }
         stage('Build & Tests (Containerized)') {
             agent {
                 docker {
                     image "maven:3.9.6-eclipse-temurin-21"
-                    args "-v $HOME/.m2:/root/.m2"
+                    args '-v $HOME/.m2:/root/.m2'
                 }
             }
             steps {
+                echo "Maven clean package"
                 sh "mvn clean package -DskipTests"
+                echo "package terminé"
             }
         }
         stage('Build Docker Image') {
