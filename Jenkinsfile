@@ -19,8 +19,10 @@ pipeline {
         stage('Build & Tests (Containerized)') {
             agent {
                 docker {
+                    echo "Docker"
                     image "maven:3.9.6-eclipse-temurin-21"
                     args '-v $HOME/.m2:/root/.m2'
+                    echo "Fin Docker"
                 }
             }
             steps {
