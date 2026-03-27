@@ -7,16 +7,15 @@ pipeline {
         IMAGE_TAG        = "${env.BUILD_NUMBER}"
         CONTAINER_NAME   = "mon-app-java-cointaner"
     }
-
-    stages {
-        stage('Checkout') {
-            steps {
-                echo 'Récupération depuis le repo git'
+        stages {
+            stage('Checkout') {
+                steps {
                 checkout scm
-                echo "checkout terminé"
+                }
             }
         }
-        stage('Build & Tests (Containerized)') {
+    
+        stage('Build & Test (Containerized)') {
             agent {
                 docker {
                     image 'maven:3.9.6-eclipse-temurin-21'
@@ -24,11 +23,10 @@ pipeline {
                 }
             }
             steps {
-                echo "Maven clean package"
-                sh "mvn clean package -DskipTests"
-                echo "package terminé"
+                sh 'mvn clean package -DskipTests'
             }
         }
+    
         stage('Build Docker Image') {
             steps {
                 echo 'Construction de l\'image via Docker CLI'
