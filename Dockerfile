@@ -5,7 +5,7 @@ LABEL maintainer="votre-nom@example.com"
 # Dossier de travail
 WORKDIR /app
 # Copie du JAR généré (on suppose que Maven génère dans target/)
-COPY target/*.jar mon-app-java-1.0-SNAPSHOT.jar
+COPY target/*.jar app.jar
 # Port exposé par l'application 
 EXPOSE 8080
 # Commande de démarrage
