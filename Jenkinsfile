@@ -18,7 +18,7 @@ pipeline {
         stage('Build & Tests (Containerized)') {
             agent {
                 docker {
-                    imgae "maven:3.9.6-eclipse-temurin-17"
+                    image "maven:3.9.6-eclipse-temurin-17"
                     args "-v $HOME/.m2/:root/.m2"
                 }
             }
